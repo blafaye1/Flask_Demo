@@ -22,5 +22,9 @@ def home_page():
 def user_input():
     return render_template('userinfo_lulu.html')
 
+@app.route('/plot')
+def plotting_page():
+    return render_template('plot_closing_January_2016.html')
+
 if __name__ == '__main__':
   app.run(port=33507)
