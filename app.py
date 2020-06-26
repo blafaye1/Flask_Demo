@@ -9,9 +9,9 @@ app = Flask(__name__)
 
 ## Set variables for plotting function ##
 
-api_key = 'X27HC5SP5PEJ5F9B'
-base_url = "https://www.alphavantage.co"
-months_dict = {'January': 1,
+app.api_key = 'X27HC5SP5PEJ5F9B'
+app.base_url = "https://www.alphavantage.co"
+app.months_dict = {'January': 1,
                'February': 2,
                'March': 3,
                'April': 4,
@@ -26,10 +26,10 @@ months_dict = {'January': 1,
 
 def get_daily_data(ticker_symbol):
     query_func = "TIME_SERIES_DAILY"
-    req_param = "{0}/query?function={1}&symbol={2}&outputsize=full&apikey={3}".format(base_url, 
+    req_param = "{0}/query?function={1}&symbol={2}&outputsize=full&apikey={3}".format(app.base_url, 
                                                                                       query_func, 
                                                                                       ticker_symbol, 
-                                                                                      api_key)
+                                                                                      app.api_key)
     data = requests.get(req_param)
     return simplejson.loads(data.text)
 
@@ -44,7 +44,7 @@ def plot_closing_month():
     closing_data = closing_data.drop(columns = ['index', '4. close'])
 
     selected_year_closing_data = closing_data[closing_data.dates.dt.year == int(year)]
-    selected_month_closing_data = [selected_year_closing_data.dates.dt.month == months_dict[month]]
+    selected_month_closing_data = [selected_year_closing_data.dates.dt.month == app.months_dict[month]]
     ordered_closing_data = selected_month_closing_data.sort_values('dates')
     
     output_file("templates/plot_closing_{0}_{1}.html".format(month, year))
@@ -66,7 +66,7 @@ def user_input():
 
 @app.route('/plot')
 def plotting_page():
-    return render_template("plot_closing_{0}_{1}.html".format(month, year))
+    return render_template("plot_closing_{0}_{1}.html".format(month, year)) # TODO: month and year are not yet defined
 
 # @app.route('/about')
 # def about():
