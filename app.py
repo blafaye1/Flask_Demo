@@ -23,6 +23,7 @@ app.months_dict = {'January': 1,
                'October': 10,
                'November': 11,
                'December': 12}
+app.params = {}
 
 def get_daily_data(ticker_symbol):
     query_func = "TIME_SERIES_DAILY"
@@ -47,10 +48,22 @@ def plot_closing_month():
     selected_month_closing_data = [selected_year_closing_data.dates.dt.month == app.months_dict[month]]
     ordered_closing_data = selected_month_closing_data.sort_values('dates')
     
-    output_file("templates/plot_closing_{0}_{1}.html".format(month, year))
+    output_file("templates/plot_closing_{0}_{1}.html".format(app.params[month], app.params[year]))
     p = figure()
     p.line(ordered_closing_data['dates'], ordered_closing_data['stock_values_float'])
     save(p)
+    
+    return
+
+def file_find_and_replace(fname, old_string, new_string):
+    
+    f = open(fname, "r")
+    file_content = f.read()
+    file_content = file_content.replace(old_string, new_string)
+    f.close()
+    f = open(fname, "w")
+    f.write(file_content)
+    f.close()
     
     return
 
@@ -66,15 +79,18 @@ def user_input():
 
 @app.route('/plot')
 def plotting_page():
-    return render_template("plot_closing_{0}_{1}.html".format(month, year)) # TODO: month and year are not yet defined
+    return render_template("plot_closing_{0}_{1}.html".format(app.params[month], app.params[year])) # TODO: app.params not yet defined
 
 # @app.route('/about')
 # def about():
 #   return render_template('about.html')
 
-# @app.route('/hello_page_test')
-# def hello_world():
-#     return 'Hello world'
+@app.route('/hello_page_test', methods = ['POST'])
+def hello_world():
+    file_name = "templates/hello_world.html"
+    form_input = request.form['user_response']
+    file_find_and_replace(file_name, 'HelloWorld', form_input)
+    return render_template("hello_world.html")
 
 if __name__ == '__main__':
   app.run(port=33507)
