@@ -36,7 +36,7 @@ def get_daily_data(ticker_symbol):
 
 def plot_closing_month():
     
-    api_data = get_daily_data(stock_symbol)
+    api_data = get_daily_data(app.params['symbol'])
     df_time_series = pd.DataFrame(api_data['Time Series (Daily)']).T
     closing_data = df_time_series.reset_index()[['index', '4. close']]
 
@@ -44,11 +44,11 @@ def plot_closing_month():
     closing_data['stock_values_float'] = closing_data['4. close'].astype(float)
     closing_data = closing_data.drop(columns = ['index', '4. close'])
 
-    selected_year_closing_data = closing_data[closing_data.dates.dt.year == int(year)]
-    selected_month_closing_data = [selected_year_closing_data.dates.dt.month == app.months_dict[month]]
-    ordered_closing_data = selected_month_closing_data.sort_values('dates')
+    selected_year = closing_data[closing_data.dates.dt.year == int(app.params['year'])]
+    selected_month = selected_year[selected_year.dates.dt.month == app.months_dict[app.params['month']]]
+    ordered_closing_data = selected_month.sort_values('dates')
     
-    output_file("templates/plot_closing_{0}_{1}.html".format(app.params[month], app.params[year]))
+    output_file("templates/plot_closing_{0}_{1}.html".format(app.params['month'], app.params['year']))
     p = figure()
     p.line(ordered_closing_data['dates'], ordered_closing_data['stock_values_float'])
     save(p)
@@ -73,24 +73,31 @@ def file_find_and_replace(fname, old_string, new_string):
 def home_page():
   return render_template('home_page.html')
 
-@app.route('/user_input')
-def user_input():
-    return render_template('userinfo_lulu.html')
-
-@app.route('/plot')
+@app.route('/plot', methods = ['POST'])
 def plotting_page():
-    return render_template("plot_closing_{0}_{1}.html".format(app.params[month], app.params[year])) # TODO: app.params not yet defined
+    app.params['symbol'] = request.form['input_symbol']
+    app.params['month'] = request.form['input_month']
+    app.params['year'] = request.form['input_year']
+    plot_closing_month()
+    return render_template("plot_closing_{0}_{1}.html".format(app.params['month'], app.params['year'])) 
 
 # @app.route('/about')
 # def about():
 #   return render_template('about.html')
 
-@app.route('/hello_page_test', methods = ['POST'])
-def hello_world():
-    file_name = "templates/hello_world.html"
-    form_input = request.form['user_response']
-    file_find_and_replace(file_name, 'HelloWorld', form_input)
-    return render_template("hello_world.html")
+# @app.route('/user_input')
+# def user_input():
+#     return render_template('userinfo_lulu.html')
+
+# @app.route('/hello_page_test', methods = ['POST'])
+# def hello_world():
+#     file_name = "templates/hello_world.html"
+#     form_input = request.form['user_response']
+#     file_find_and_replace(file_name, 'HelloWorld', form_input)
+#     app.params['symbol'] = request.form['input_symbol']
+#     app.params['month'] = request.form['input_month']
+#     app.params['year'] = request.form['input_year']
+#     return render_template("hello_world.html")
 
 if __name__ == '__main__':
   app.run(port=33507)

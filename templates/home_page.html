@@ -2,32 +2,25 @@
 <html>
 
 <body>
-<h1>Heading 1 looks like this.</h1>
-<p>I'll start a paragraph here.</p>
-<p>And then another one here.</p>
+<h2>This application plots the closing ticker data for a stock for one month.</h2>
 
-<h2>And then we have heading 2.</h2>
-<p>With a paragraph underneath.</p>
 
-<h1>What does it look like if I go back to heading 1?</h1>
+<h3>Enter info below</h3>
 
-<h2>Let's try a link to the user input page.</h2>
-
-    <a href="/user_input">Input page</a>
-
-<h2>Here's a form.</h2>
-
-<form id='home_page_form' method='post' action='hello_page_test' >
+<form id='home_page_form' method='post' action='plot' >
     <p>
-        Magic word: <input type='text' name='user_response' />
+        Stock ticker ID: <input type='text' name='input_symbol' />
+    </p>
+    <p>
+        Month: <input type='text' name='input_month' />
+    </p>
+    <p>
+        Year: <input type='text' name='input_year' />
     </p>
     <p>
         <input type='submit' value='Go!' />
     </p>
 </form>
-
-<a href="/plot">Link to plot</a>
-<a href="/hello_page_test">Link to hello world</a>
 
 </body>
 
