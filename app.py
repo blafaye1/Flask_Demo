@@ -49,8 +49,19 @@ def plot_closing_month():
     ordered_closing_data = selected_month.sort_values('dates')
     
     output_file("templates/plot_closing_{0}_{1}.html".format(app.params['month'], app.params['year']))
-    p = figure()
-    p.line(ordered_closing_data['dates'], ordered_closing_data['stock_values_float'])
+    p = figure(title = "{0}, {1}".format(app.params['month'], app.params['year']),
+               plot_width = 700,
+               plot_height = 500,
+               x_axis_type = "datetime")
+    p.line(ordered_closing_data['dates'], 
+           ordered_closing_data['stock_values_float'],
+           line_color = "olivedrab",
+           line_width = 2)
+    p.circle(ordered_closing_data['dates'], 
+             ordered_closing_data['stock_values_float'],
+             color = "olivedrab",
+             fill_color = "white",
+             size = 6)
     save(p)
     
     return
