@@ -28,6 +28,18 @@ app.successful_query = {0: "error_invalid_symbol.html",
                         1: "error_invalid_date.html",
                         2: ""}
 
+def find_and_replace(fname, old_string, new_string):
+    
+    f = open(fname, "r")
+    file_content = f.read()
+    file_content = file_content.replace(old_string, new_string)
+    f.close()
+    f = open(fname, "w")
+    f.write(file_content)
+    f.close()
+    
+    return
+
 def get_daily_data(ticker_symbol):
     query_func = "TIME_SERIES_DAILY"
     req_param = "{0}/query?function={1}&symbol={2}&outputsize=full&apikey={3}".format(app.base_url, 
@@ -70,20 +82,11 @@ def plot_closing_month():
              fill_color = "white",
              size = 6)
     save(p)
+    find_and_replace("templates/plot_closing_{0}_{1}.html".format(app.params['month'], app.params['year']),
+                     '</body>',
+                     '<a href="/">Home</a>' + '\n' + '</body>')
     
     return 2
-
-def file_find_and_replace(fname, old_string, new_string):
-    
-    f = open(fname, "r")
-    file_content = f.read()
-    file_content = file_content.replace(old_string, new_string)
-    f.close()
-    f = open(fname, "w")
-    f.write(file_content)
-    f.close()
-    
-    return
 
 ## Routed pages ##
 
@@ -98,7 +101,7 @@ def plotting_page():
     app.params['year'] = request.form['input_year']
     app.successful_query[2] = "plot_closing_{0}_{1}.html".format(app.params['month'], app.params['year'])
     query_key = plot_closing_month()
-    return render_template(app.successful_query[query_key]) 
+    return render_template(app.successful_query[query_key])
 
 # @app.route('/about')
 # def about():
