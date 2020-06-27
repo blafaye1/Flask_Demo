@@ -24,6 +24,9 @@ app.months_dict = {'January': 1,
                'November': 11,
                'December': 12}
 app.params = {}
+app.successful_query = {0: "error_invalid_symbol.html",
+                        1: "error_invalid_date.html",
+                        2: ""}
 
 def get_daily_data(ticker_symbol):
     query_func = "TIME_SERIES_DAILY"
@@ -37,6 +40,8 @@ def get_daily_data(ticker_symbol):
 def plot_closing_month():
     
     api_data = get_daily_data(app.params['symbol'])
+    if 'Error Message' in api_data:
+        return 0  
     df_time_series = pd.DataFrame(api_data['Time Series (Daily)']).T
     closing_data = df_time_series.reset_index()[['index', '4. close']]
 
@@ -64,7 +69,7 @@ def plot_closing_month():
              size = 6)
     save(p)
     
-    return
+    return 2
 
 def file_find_and_replace(fname, old_string, new_string):
     
@@ -82,15 +87,16 @@ def file_find_and_replace(fname, old_string, new_string):
 
 @app.route('/')
 def home_page():
-  return render_template('home_page.html')
+  return render_template("home_page.html")
 
 @app.route('/plot', methods = ['POST'])
 def plotting_page():
     app.params['symbol'] = request.form['input_symbol']
     app.params['month'] = request.form['input_month']
     app.params['year'] = request.form['input_year']
-    plot_closing_month()
-    return render_template("plot_closing_{0}_{1}.html".format(app.params['month'], app.params['year'])) 
+    app.successful_query[2] = "plot_closing_{0}_{1}.html".format(app.params['month'], app.params['year'])
+    query_key = plot_closing_month()
+    return render_template(app.successful_query[query_key]) 
 
 # @app.route('/about')
 # def about():
