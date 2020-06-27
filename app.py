@@ -51,6 +51,8 @@ def plot_closing_month():
 
     selected_year = closing_data[closing_data.dates.dt.year == int(app.params['year'])]
     selected_month = selected_year[selected_year.dates.dt.month == app.months_dict[app.params['month']]]
+    if not len(selected_month):
+        return 1
     ordered_closing_data = selected_month.sort_values('dates')
     
     output_file("templates/plot_closing_{0}_{1}.html".format(app.params['month'], app.params['year']))
